@@ -1,0 +1,44 @@
+#!/bin/bash
+###########################################################################################
+# Author: Imtiaz Ali
+# Name: tuneisimDB
+# Description: Script for ISIM DB2 tuning automation
+###########################################################################################
+clear && printf '\e[3J'
+NOW=$(date +"%m-%d-%Y-%H-%M-%S")
+dbuser=db2admin
+dbname=itimdb
+schemaName=itimuser
+echo "#######################################################################################################"
+echo " Connecting to $dbname database with $dbuser"
+echo "#######################################################################################################"
+su - $dbuser -c "db2 connect to $dbname"
+echo "#######################################################################################################"
+echo "killing any connected applications"
+echo "#######################################################################################################"
+su - $dbuser -c "db2 force application ALL"
+sleep 1m
+echo " Re-Organizing Tables Start"
+echo "#######################################################################################################"
+su - $dbuser -c "/usr/local/bin/perftune_reorg.sh $dbname $schemaName > /tmp/perflogs/reorgLogs_$NOW.log 2>&1"
+echo "#######################################################################################################"
+echo " ReOrg Process Completed - Refer to /tmp/perflogs/runStatsLog_$NOW.log file for details"
+echo "#######################################################################################################"
+sleep 5
+echo "#######################################################################################################"
+echo "killing any connected applications again for RunStats"
+echo "#######################################################################################################"
+su - $dbuser -c "db2 force application ALL"
+sleep 1m
+echo "#######################################################################################################"
+echo " Connecting to $dbname database with $dbuser"
+echo "#######################################################################################################"
+su - $dbuser -c "db2 connect to $dbname"
+echo " Running stats on Tables Start"
+su - $dbuser -c "/usr/local/bin/perftune_runstats.sh $dbname $schemaName > /tmp/perflogs/runStatsLog_$NOW.log 2>&1"
+echo "#######################################################################################################"
+echo " RunStats Process Completed - Refer to /tmp/perflogs/runStatsLog_$NOW.log file for details"
+echo "#######################################################################################################"
+echo " Tuning Process Completed"
+echo "#######################################################################################################"
+
