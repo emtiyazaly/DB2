@@ -3,6 +3,7 @@
 # Author: Imtiaz Ali
 # Name: tuneisimDB
 # Description: Script for ISIM DB2 tuning automation
+# Make sure you have tuneisimDB, perftune_reorg.sh, perftune_runstats.sh in the same path
 ###########################################################################################
 clear && printf '\e[3J'
 NOW=$(date +"%m-%d-%Y-%H-%M-%S")
