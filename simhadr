@@ -1,0 +1,18 @@
+#! /bin/bash
+##################################################################
+# Author: Imtiaz Ali
+# simhadr.sh
+# This script is not officially supported by IBM Performance test.
+##################################################################
+clear && printf '\e[3J'
+echo "######################################################################################"
+echo "	-= HADR CONFIGURATIONS & First Active Log File & Log Path Information =-"
+echo "######################################################################################"
+su - db2admin -c "db2 get db cfg for itimdb| grep -E 'HADR|First|Path'"
+echo "######################################################################################"
+echo "		-= HADR STATUS log Position Details =-"
+echo "######################################################################################"
+su - db2admin -c "db2 get snapshot for db on itimdb | awk '/HADR Status/{printing=1}/Memory usage for database/{printing=0}{if (printing==1) print}'"
+echo "######################################################################################"
+echo "Make sure [Primary/Standby Log position] vs [First active log file] before PRUNING!"
+echo "######################################################################################"
